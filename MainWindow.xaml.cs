@@ -24,5 +24,18 @@ namespace Pc_clicker
         {
             InitializeComponent();
         }
+
+        private void Button_Recorder(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void Button_Config(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void Button_Excutor(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
