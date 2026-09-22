@@ -1,0 +1,39 @@
+<UserControl x:Class="Pc_clicker.Views.SinglePointPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="210" d:DesignWidth="316">
+    <StackPanel Orientation="Vertical" Margin="4">
+        <TextBlock x:Name="intro"
+                   Text="在鼠标位置持续点击左/右键"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,8"/>
+        <GroupBox Header="鼠标按键">
+            <StackPanel Orientation="Horizontal" Margin="4">
+                <RadioButton x:Name="leftbtn"
+                             Content="左键"
+                             IsChecked="True"
+                             GroupName="MouseButton"
+                             Margin="4,0"/>
+                <RadioButton x:Name="rightbtn"
+                             Content="右键"
+                             GroupName="MouseButton"
+                             Margin="4,0"/>
+                <RadioButton x:Name="middlebtn"
+                             Content="中键"
+                             GroupName="MouseButton"
+                             Margin="4,0"/>
+                <RadioButton x:Name="sidebtn1"
+                             Content="侧键1"
+                             GroupName="MouseButton"
+                             Margin="4,0"/>
+                <RadioButton x:Name="sidebtn2"
+                             Content="侧键2"
+                             GroupName="MouseButton"
+                             Margin="4,0"/>
+            </StackPanel>
+        </GroupBox>
+    </StackPanel>
+</UserControl>
