@@ -26,11 +26,11 @@
                              GroupName="MouseButton"
                              Margin="4,0"/>
                 <RadioButton x:Name="sidebtn1"
-                             Content="侧键1"
+                             Content="侧键前"
                              GroupName="MouseButton"
                              Margin="4,0"/>
                 <RadioButton x:Name="sidebtn2"
-                             Content="侧键2"
+                             Content="侧键后"
                              GroupName="MouseButton"
                              Margin="4,0"/>
             </StackPanel>
