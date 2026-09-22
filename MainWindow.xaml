@@ -77,11 +77,13 @@
                     x:Name="locating"
                     Content="鼠标位置"
                     Margin="0,0,2,0"
+                    ToolTip="显示/关闭跟随鼠标的坐标浮窗（F9）"
                     Click="Locating_Click"/>
             <Button Grid.Column="1"
                     x:Name="excuting"
                     Content="执行"
                     Margin="2,0,0,0"
+                    ToolTip="开始/停止执行循环（F8）"
                     Click="Excuting_Click"/>
         </Grid>
     </Grid>

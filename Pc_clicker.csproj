@@ -55,6 +55,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="func\InputSimulator.cs" />
+    <Compile Include="func\LoopRunner.cs" />
+    <Compile Include="func\NativeMethods.cs" />
+    <Compile Include="func\ScriptEngine.cs" />
+    <Compile Include="func\TargetEnumerator.cs" />
+    <Compile Include="Views\InputDialog.xaml.cs">
+      <DependentUpon>InputDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MouseBubbleWindow.xaml.cs">
+      <DependentUpon>MouseBubbleWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ScriptLoopPage.xaml.cs">
       <DependentUpon>ScriptLoopPage.xaml</DependentUpon>
     </Compile>
@@ -79,6 +90,14 @@
     <Page Include="Views\SinglePointPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\InputDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MouseBubbleWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -98,7 +117,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="fix_views.ps1" />
+    <Content Include="指导文档.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="UI\page_multi.ui" />
     <None Include="UI\page_single.ui" />
     <None Include="Properties\Settings.settings">
@@ -111,8 +132,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="func\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
