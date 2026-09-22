@@ -13,31 +13,31 @@
                    HorizontalAlignment="Center"
                    Margin="0,0,0,8"/>
         <GroupBox Header="鼠标按键" Padding="6">
-            <Grid Width="240" Height="210" HorizontalAlignment="Center">
-                <!-- 鼠标主体（俯视，黑白简笔画） -->
+            <Grid Width="280" Height="220" HorizontalAlignment="Center">
+                <!-- 鼠标主体（俯视，黑白简笔画），整体右移为侧键留出空间 -->
                 <!-- 主体：左右对称、上窄下宽的圆角外形 -->
-                <Path Data="M 60,40
-                            C 60,18 78,8 120,8
-                            C 162,8 180,18 180,40
-                            L 180,150
-                            C 180,182 158,200 120,200
-                            C 82,200 60,182 60,150 Z"
+                <Path Data="M 80,40
+                            C 80,18 98,8 140,8
+                            C 182,8 200,18 200,40
+                            L 200,150
+                            C 200,182 178,200 140,200
+                            C 102,200 80,182 80,150 Z"
                       Fill="White" Stroke="Black" StrokeThickness="2"/>
                 <!-- 左右键与掌托的分隔横线 -->
-                <Line X1="60" Y1="78" X2="180" Y2="78" Stroke="Black" StrokeThickness="1.5"/>
+                <Line X1="80" Y1="78" X2="200" Y2="78" Stroke="Black" StrokeThickness="1.5"/>
                 <!-- 左右键中间竖直分割线（仅上半部分） -->
-                <Line X1="120" Y1="8" X2="120" Y2="78" Stroke="Black" StrokeThickness="1.5"/>
+                <Line X1="140" Y1="8" X2="140" Y2="78" Stroke="Black" StrokeThickness="1.5"/>
                 <!-- 滚轮（居中于分割线顶部） -->
                 <Rectangle Width="16" Height="34" RadiusX="8" RadiusY="8"
                            Fill="White" Stroke="Black" StrokeThickness="1.5"
                            HorizontalAlignment="Left" VerticalAlignment="Top"
-                           Margin="112,20,0,0"/>
-                <Line X1="112" Y1="32" X2="128" Y2="32" Stroke="Black" StrokeThickness="1"/>
-                <Line X1="112" Y1="42" X2="128" Y2="42" Stroke="Black" StrokeThickness="1"/>
+                           Margin="132,22,0,0"/>
+                <Line X1="132" Y1="34" X2="148" Y2="34" Stroke="Black" StrokeThickness="1"/>
+                <Line X1="132" Y1="44" X2="148" Y2="44" Stroke="Black" StrokeThickness="1"/>
                 <!-- 侧键（内嵌于左侧轮廓） -->
-                <Path Data="M 60,96 L 76,92 L 76,110 L 60,114 Z"
+                <Path Data="M 80,96 L 96,92 L 96,110 L 80,114 Z"
                       Fill="White" Stroke="Black" StrokeThickness="1.5"/>
-                <Path Data="M 60,120 L 76,116 L 76,134 L 60,138 Z"
+                <Path Data="M 80,120 L 96,116 L 96,134 L 80,138 Z"
                       Fill="White" Stroke="Black" StrokeThickness="1.5"/>
 
                 <!-- RadioButton 按真实鼠标位置排布 -->
@@ -46,27 +46,27 @@
                              IsChecked="True"
                              GroupName="MouseButton"
                              HorizontalAlignment="Left" VerticalAlignment="Top"
-                             Margin="64,80,0,0"/>
+                             Margin="86,48,0,0"/>
                 <RadioButton x:Name="rightbtn"
                              Content="右键"
                              GroupName="MouseButton"
                              HorizontalAlignment="Left" VerticalAlignment="Top"
-                             Margin="128,80,0,0"/>
+                             Margin="158,48,0,0"/>
                 <RadioButton x:Name="middlebtn"
                              Content="中键"
                              GroupName="MouseButton"
                              HorizontalAlignment="Left" VerticalAlignment="Top"
-                             Margin="106,2,0,0"/>
+                             Margin="130,2,0,0"/>
                 <RadioButton x:Name="sidebtn1"
-                             Content="前"
+                             Content="前侧键"
                              GroupName="MouseButton"
                              HorizontalAlignment="Left" VerticalAlignment="Top"
-                             Margin="2,96,0,0"/>
+                             Margin="4,92,0,0"/>
                 <RadioButton x:Name="sidebtn2"
-                             Content="后"
+                             Content="后侧键"
                              GroupName="MouseButton"
                              HorizontalAlignment="Left" VerticalAlignment="Top"
-                             Margin="2,120,0,0"/>
+                             Margin="4,116,0,0"/>
             </Grid>
         </GroupBox>
     </StackPanel>
