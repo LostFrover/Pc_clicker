@@ -57,10 +57,10 @@
 
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button x:Name="btnEditScript"
-                    Content="编辑文件"
-                    Padding="8,2"/>
+                    Content="编辑配置"
+                    Padding="8,2" Click="btnEditScript_Click"/>
             <Button x:Name="btnOpenFolder"
-                    Content="打开脚本文件夹"
+                    Content="打开配置文件夹"
                     Padding="8,2"
                     Margin="8,0,0,0"/>
         </StackPanel>
