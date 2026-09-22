@@ -16,51 +16,57 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Menu Grid.Row="0">
+        <Menu Grid.Row="0" HorizontalContentAlignment="Center">
             <MenuItem x:Name="menuPageSingle" Header="单点循环" Click="MenuPageSingle_Click"/>
             <MenuItem x:Name="menuPageMulti" Header="配置循环" Click="MenuPageMulti_Click"/>
             <MenuItem x:Name="menuPageGuide" Header="指导文档" Click="MenuPageGuide_Click"/>
         </Menu>
 
         <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1" Margin="4">
-            <ContentControl x:Name="pageHost">
+            <ContentControl x:Name="pageHost"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center">
                 <views:SinglePointPage x:Name="singlePage"/>
             </ContentControl>
         </Border>
 
-        <Grid Grid.Row="2" Margin="4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <GroupBox Grid.Column="0" Header="循环类型" Padding="4">
-                <StackPanel Orientation="Vertical">
+        <StackPanel Grid.Row="2" Margin="4" HorizontalAlignment="Center">
+            <GroupBox Header="循环类型" Padding="4">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <RadioButton x:Name="loop_count"
                                  Content="次数循环"
                                  IsChecked="True"
                                  GroupName="LoopMode"
                                  Checked="LoopMode_Checked"
-                                 Margin="2"/>
+                                 Margin="6,2"/>
                     <RadioButton x:Name="loop_time"
                                  Content="时间循环(分钟)"
                                  GroupName="LoopMode"
                                  Checked="LoopMode_Checked"
-                                 Margin="2"/>
+                                 Margin="6,2"/>
                     <RadioButton x:Name="loop_continue"
                                  Content="无限循环"
                                  GroupName="LoopMode"
                                  Checked="LoopMode_Checked"
-                                 Margin="2"/>
+                                 Margin="6,2"/>
                 </StackPanel>
             </GroupBox>
-            <TextBox Grid.Column="1"
-                     x:Name="loop_num"
-                     Text="1"
-                     Width="80"
-                     HorizontalAlignment="Left"
-                     VerticalAlignment="Center"
-                     PreviewTextInput="LoopNum_PreviewTextInput"/>
-        </Grid>
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Margin="0,6,0,0">
+                <TextBlock x:Name="loop_num_label"
+                           Text="循环次数/时间:"
+                           VerticalAlignment="Center"
+                           Margin="0,0,6,0"/>
+                <TextBox x:Name="loop_num"
+                         Text="1"
+                         Width="80"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         HorizontalContentAlignment="Center"
+                         PreviewTextInput="LoopNum_PreviewTextInput"/>
+            </StackPanel>
+        </StackPanel>
 
         <Grid Grid.Row="3" Margin="4">
             <Grid.ColumnDefinitions>

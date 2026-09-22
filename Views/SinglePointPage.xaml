@@ -5,13 +5,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              d:DesignHeight="210" d:DesignWidth="316">
-    <StackPanel Orientation="Vertical" Margin="4">
+    <StackPanel Orientation="Vertical" Margin="4" HorizontalAlignment="Center">
         <TextBlock x:Name="intro"
                    Text="在鼠标位置持续点击左/右键"
                    TextWrapping="Wrap"
+                   TextAlignment="Center"
+                   HorizontalAlignment="Center"
                    Margin="0,0,0,8"/>
         <GroupBox Header="鼠标按键">
-            <StackPanel Orientation="Horizontal" Margin="4">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="4">
                 <RadioButton x:Name="leftbtn"
                              Content="左键"
                              IsChecked="True"

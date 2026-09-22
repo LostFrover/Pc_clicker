@@ -96,6 +96,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="fix_views.ps1" />
     <None Include="UI\page_multi.ui" />
     <None Include="UI\page_single.ui" />
     <None Include="Properties\Settings.settings">
