@@ -55,7 +55,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Views\ScriptLoopPage.xaml.cs" />
+    <Compile Include="Views\ScriptLoopPage.xaml.cs">
+      <DependentUpon>ScriptLoopPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SinglePointPage.xaml.cs">
       <DependentUpon>SinglePointPage.xaml</DependentUpon>
     </Compile>

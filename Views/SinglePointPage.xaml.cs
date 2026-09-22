@@ -11,5 +11,7 @@ namespace Pc_clicker.Views
         {
             InitializeComponent();
         }
+
+
     }
 }
