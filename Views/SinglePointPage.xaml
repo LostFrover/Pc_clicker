@@ -56,7 +56,7 @@
                              Content="中键"
                              GroupName="MouseButton"
                              HorizontalAlignment="Left" VerticalAlignment="Top"
-                             Margin="130,0,0,0"/>
+                             Margin="130,10,0,0"/>
                 <RadioButton x:Name="sidebtn1"
                              Content="前侧键"
                              GroupName="MouseButton"
