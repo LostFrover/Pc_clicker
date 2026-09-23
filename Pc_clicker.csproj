@@ -121,13 +121,10 @@
     <Content Include="指导文档.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="UI\page_multi.ui" />
-    <None Include="UI\page_single.ui" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="UI\UI.ui" />
     <None Include="worklist.md" />
   </ItemGroup>
   <ItemGroup>
