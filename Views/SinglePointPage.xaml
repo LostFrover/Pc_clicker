@@ -7,7 +7,7 @@
              d:DesignHeight="300" d:DesignWidth="316">
     <StackPanel Orientation="Vertical" Margin="4" HorizontalAlignment="Center">
         <TextBlock x:Name="intro"
-                   Text="在鼠标位置持续点击所选按键（F8 开始/停止）"
+                   Text="在鼠标位置持续点击所选按键（Ctrl+小键盘0 开始/停止）"
                    TextWrapping="Wrap"
                    TextAlignment="Center"
                    HorizontalAlignment="Center"

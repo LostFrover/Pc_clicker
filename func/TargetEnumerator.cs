@@ -23,10 +23,14 @@ namespace Pc_clicker.func
         public TargetKind Kind { get; set; }
 
         /// <summary>
-        /// 脚本首行使用的目标名称：窗口项为进程文件名（如 notepad.exe），屏幕项为 “屏幕x”。
+        /// 脚本首行使用的目标名称：窗口项为进程文件名（如 notepad.exe），屏幕项为 “screenx”。
+        /// 脚本里只使用英文标识，便于以后做多语言适配。
         /// 进程文件名不会像窗口标题那样频繁变化，因此用它做校验依据。
         /// </summary>
         public string Title { get; set; }
+
+        /// <summary>界面上显示的目标名称（屏幕项为「屏幕x」，窗口项与 Title 相同）</summary>
+        public string UiName { get; set; }
 
         /// <summary>窗口句柄；屏幕项为 IntPtr.Zero</summary>
         public IntPtr Handle { get; set; }
@@ -99,7 +103,8 @@ namespace Pc_clicker.func
                 screens.Add(new TargetItem
                 {
                     Kind = TargetKind.Screen,
-                    Title = "屏幕" + index,
+                    Title = "screen" + index,
+                    UiName = "屏幕" + index,
                     Handle = IntPtr.Zero,
                     ScreenLeft = m.rcMonitor.Left,
                     ScreenTop = m.rcMonitor.Top,
@@ -117,7 +122,8 @@ namespace Pc_clicker.func
                 screens.Add(new TargetItem
                 {
                     Kind = TargetKind.Screen,
-                    Title = "屏幕1",
+                    Title = "screen1",
+                    UiName = "屏幕1",
                     Display = "屏幕1",
                     Detail = "显示器1"
                 });
@@ -159,6 +165,7 @@ namespace Pc_clicker.func
                 {
                     Kind = TargetKind.Window,
                     Title = processName,
+                    UiName = processName,
                     Handle = hWnd,
                     Display = string.Format("{0}  [0x{1:X}]", processName, hWnd.ToInt64()),
                     Detail = "窗口标题：" + title

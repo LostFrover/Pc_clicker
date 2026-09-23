@@ -59,6 +59,7 @@
     <Compile Include="func\LoopRunner.cs" />
     <Compile Include="func\NativeMethods.cs" />
     <Compile Include="func\ScriptEngine.cs" />
+    <Compile Include="func\ScriptFormatter.cs" />
     <Compile Include="func\TargetEnumerator.cs" />
     <Compile Include="Views\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>

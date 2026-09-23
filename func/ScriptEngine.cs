@@ -138,7 +138,10 @@ namespace Pc_clicker.func
             return null;
         }
 
-        private ScriptAction ParseLine(string line, int lineNo, out string error)
+        /// <summary>
+        /// 解析一行脚本。lineNo 只用于错误提示（显示层可传 0）。
+        /// </summary>
+        public static ScriptAction ParseLine(string line, int lineNo, out string error)
         {
             error = null;
             // 结构: 指令类型 + 空格 + 参数
@@ -160,14 +163,14 @@ namespace Pc_clicker.func
             }
         }
 
-        private ScriptAction ParseMouse(string arg, int lineNo, out string error)
+        private static ScriptAction ParseMouse(string arg, int lineNo, out string error)
         {
             error = null;
-            // 参数: 按键类型 x y（x/y 为 0-1 的相对比例，-1 -1 表示鼠标当前位置）
-            var parts = arg.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            // 参数: 按键编号+x坐标+y坐标（也兼容空格分隔；-1+-1 表示鼠标当前位置）
+            var parts = arg.Split(new[] { '+', ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 3)
             {
-                error = string.Format("第 {0} 行：mouse 参数应为 \"按键类型 x y\"（3 个值）", lineNo);
+                error = string.Format("第 {0} 行：mouse 参数应为 \"按键编号+x坐标+y坐标\"（如 mouse 0+0.5+0.5）", lineNo);
                 return null;
             }
 
@@ -175,7 +178,7 @@ namespace Pc_clicker.func
             double x, y;
             if (!int.TryParse(parts[0], out btn) || btn < 0 || btn > 4)
             {
-                error = string.Format("第 {0} 行：mouse 按键类型应为 0-4（左0 右1 中2 侧键3/4）", lineNo);
+                error = string.Format("第 {0} 行：mouse 按键编号应为 0-4（左0 右1 中2 前侧3 后侧4）", lineNo);
                 return null;
             }
             if (!TryParseRatio(parts[1], out x) || !TryParseRatio(parts[2], out y))
@@ -187,7 +190,7 @@ namespace Pc_clicker.func
             bool currentPosition = x == -1 && y == -1;
             if (!currentPosition && (x < 0 || x > 1 || y < 0 || y > 1))
             {
-                error = string.Format("第 {0} 行：mouse 坐标应为 0-1 的相对比例（-1 -1 表示鼠标当前位置）", lineNo);
+                error = string.Format("第 {0} 行：mouse 坐标应为 0-1 的相对比例（-1+-1 表示鼠标当前位置）", lineNo);
                 return null;
             }
 
@@ -208,7 +211,7 @@ namespace Pc_clicker.func
             return double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
         }
 
-        private ScriptAction ParseKey(string arg, int lineNo, out string error)
+        private static ScriptAction ParseKey(string arg, int lineNo, out string error)
         {
             error = null;
             var keys = InputSimulator.ParseKeys(arg);
@@ -220,7 +223,7 @@ namespace Pc_clicker.func
             return new ScriptAction { Type = "key", Keys = keys };
         }
 
-        private ScriptAction ParseWait(string arg, int lineNo, out string error)
+        private static ScriptAction ParseWait(string arg, int lineNo, out string error)
         {
             error = null;
             int ms;

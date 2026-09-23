@@ -247,8 +247,18 @@ namespace Pc_clicker.Views
 
             try
             {
-                foreach (string line in ScriptEngine.ReadAllLines(path))
-                    listScript.Items.Add(line);
+                string[] lines = ScriptEngine.ReadAllLines(path);
+                if (lines.Length == 0) return;
+
+                // 首行为目标行，其余行转换成人类可读的描述（空行不显示）
+                listScript.Items.Add(ScriptFormatter.FormatTargetLine((lines[0] ?? string.Empty).Trim()));
+
+                for (int i = 1; i < lines.Length; i++)
+                {
+                    string text = ScriptFormatter.FormatLine(lines[i]);
+                    if (text != null)
+                        listScript.Items.Add(text);
+                }
             }
             catch (Exception ex)
             {

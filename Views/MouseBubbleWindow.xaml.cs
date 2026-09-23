@@ -45,9 +45,11 @@ namespace Pc_clicker.Views
         private static string DescribeTarget(TargetItem target)
         {
             if (target == null) return "未选择目标";
+
+            string name = string.IsNullOrEmpty(target.UiName) ? target.Title : target.UiName;
             return target.Kind == TargetKind.Window
-                ? "进程：" + target.Title
-                : "屏幕：" + target.Title;
+                ? "进程：" + name
+                : "屏幕：" + name;
         }
 
         /// <summary>

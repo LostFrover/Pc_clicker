@@ -20,7 +20,7 @@
 
         <TextBlock Grid.Row="0"
                    x:Name="intro"
-                   Text="根据预设脚本进行点击和按键操作，鼠标干扰大，请使用快捷键停止后再进行操作"
+                   Text="根据预设脚本进行点击和按键操作，鼠标干扰大，请用 Ctrl+小键盘0 停止后再进行操作"
                    TextWrapping="Wrap"
                    TextAlignment="Left"
                    HorizontalAlignment="Center"

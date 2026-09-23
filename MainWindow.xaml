@@ -49,7 +49,7 @@
                     <RadioButton x:Name="loop_continue"
                                  Content="无限循环"
                                  GroupName="LoopMode"
-                                 ToolTip="一直执行，直到点击停止或按 F8"
+                                 ToolTip="一直执行，直到点击停止或按 Ctrl+小键盘0"
                                  Checked="LoopMode_Checked"
                                  Margin="6,2"/>
                 </StackPanel>
@@ -80,13 +80,13 @@
                     x:Name="locating"
                     Content="鼠标位置"
                     Margin="0,0,2,0"
-                    ToolTip="显示/关闭跟随鼠标的坐标浮窗（F9）"
+                    ToolTip="显示/关闭跟随鼠标的坐标浮窗（Ctrl+小键盘.）"
                     Click="Locating_Click"/>
             <Button Grid.Column="1"
                     x:Name="excuting"
                     Content="执行"
                     Margin="2,0,0,0"
-                    ToolTip="开始/停止执行循环（F8）"
+                    ToolTip="开始/停止执行循环（Ctrl+小键盘0）"
                     Click="Excuting_Click"/>
         </Grid>
     </Grid>

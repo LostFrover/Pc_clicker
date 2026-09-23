@@ -17,11 +17,12 @@ namespace Pc_clicker
     /// </summary>
     public partial class MainWindow : Window
     {
-        // 全局快捷键：F8 开始/停止，F9 关闭鼠标坐标浮窗
+        // 全局快捷键：Ctrl+小键盘0 开始/停止，Ctrl+小键盘. 显示/关闭鼠标坐标浮窗
         private const int HotkeyToggleRun = 0xA001;
-        private const int HotkeyCloseBubble = 0xA002;
-        private const uint VkF8 = 0x77;
-        private const uint VkF9 = 0x78;
+        private const int HotkeyToggleBubble = 0xA002;
+        private const uint VkNumpad0 = 0x60;
+        private const uint VkDecimal = 0x6E;
+        private const uint HotkeyModifiers = NativeMethods.MOD_CONTROL | NativeMethods.MOD_NOREPEAT;
 
         private readonly ScriptLoopPage _scriptPage = new ScriptLoopPage();
         private readonly LoopRunner _runner = new LoopRunner();
@@ -352,8 +353,8 @@ namespace Pc_clicker
                 _hwndSource.AddHook(WndProc);
 
             // 注册失败（如已被其它程序占用）时仍可使用界面按钮和窗口内快捷键
-            NativeMethods.RegisterHotKey(helper.Handle, HotkeyToggleRun, NativeMethods.MOD_NOREPEAT, VkF8);
-            NativeMethods.RegisterHotKey(helper.Handle, HotkeyCloseBubble, NativeMethods.MOD_NOREPEAT, VkF9);
+            NativeMethods.RegisterHotKey(helper.Handle, HotkeyToggleRun, HotkeyModifiers, VkNumpad0);
+            NativeMethods.RegisterHotKey(helper.Handle, HotkeyToggleBubble, HotkeyModifiers, VkDecimal);
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -367,9 +368,9 @@ namespace Pc_clicker
                     ToggleExecution();
                     handled = true;
                 }
-                else if (id == HotkeyCloseBubble)
+                else if (id == HotkeyToggleBubble)
                 {
-                    CloseBubble();
+                    ToggleBubble();
                     handled = true;
                 }
             }
@@ -379,15 +380,18 @@ namespace Pc_clicker
 
         private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            // 窗口激活时同样支持 F8 / F9
-            if (e.Key == Key.F8)
+            // 窗口激活时同样支持 Ctrl+小键盘0 / Ctrl+小键盘.
+            bool ctrl = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+            if (!ctrl) return;
+
+            if (e.Key == Key.NumPad0)
             {
                 ToggleExecution();
                 e.Handled = true;
             }
-            else if (e.Key == Key.F9)
+            else if (e.Key == Key.Decimal)
             {
-                CloseBubble();
+                ToggleBubble();
                 e.Handled = true;
             }
         }
@@ -399,7 +403,7 @@ namespace Pc_clicker
 
             var helper = new WindowInteropHelper(this);
             NativeMethods.UnregisterHotKey(helper.Handle, HotkeyToggleRun);
-            NativeMethods.UnregisterHotKey(helper.Handle, HotkeyCloseBubble);
+            NativeMethods.UnregisterHotKey(helper.Handle, HotkeyToggleBubble);
 
             if (_hwndSource != null)
             {
@@ -412,10 +416,10 @@ namespace Pc_clicker
 
         private const string FallbackGuide =
             "# Pc_clicker 指导文档\n\n" +
-            "脚本首行填写目标进程文件名（如 notepad.exe）或「屏幕x」，之后每行一条操作：\n\n" +
-            "- mouse 按键类型 x y    （按键类型 0左键/1右键/2中键/3前侧键/4后侧键；x y 为 0-1 相对比例；-1 -1 表示鼠标当前位置）\n" +
+            "脚本首行填写目标进程文件名（如 notepad.exe）或「screenx」，之后每行一条操作：\n\n" +
+            "- mouse 按键编号+x坐标+y坐标    （按键编号 0左键/1右键/2中键/3前侧键/4后侧键；坐标为 0-1 相对比例；-1+-1 表示鼠标当前位置）\n" +
             "- key 按键              （如 ctrl+alt+del、shift+a、win+r、menu、volumeup、medianext）\n" +
             "- wait 毫秒             （如 wait 500）\n\n" +
-            "快捷键：F8 开始/停止，F9 关闭鼠标坐标浮窗。\n";
+            "快捷键：Ctrl+小键盘0 开始/停止，Ctrl+小键盘. 显示/关闭鼠标坐标浮窗（需开启 NumLock）。\n";
     }
 }

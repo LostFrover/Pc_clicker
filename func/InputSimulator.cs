@@ -99,11 +99,11 @@ namespace Pc_clicker.func
         // 按键名称 -> Virtual-Key Code
         private static readonly Dictionary<string, ushort> KeyMap = new Dictionary<string, ushort>(StringComparer.OrdinalIgnoreCase)
         {
-            // 修饰键（不区分左右，默认使用左侧按键）
-            { "ctrl", 0xA2 }, { "control", 0xA2 },
-            { "alt", 0xA4 },
-            { "shift", 0xA0 },
-            { "win", 0x5B }, { "lwin", 0x5B },
+            // 修饰键：默认使用左侧键，需要右侧时加 r 前缀（如 rctrl）
+            { "ctrl", 0xA2 }, { "control", 0xA2 }, { "lctrl", 0xA2 }, { "rctrl", 0xA3 },
+            { "alt", 0xA4 }, { "lalt", 0xA4 }, { "ralt", 0xA5 },
+            { "shift", 0xA0 }, { "lshift", 0xA0 }, { "rshift", 0xA1 },
+            { "win", 0x5B }, { "lwin", 0x5B }, { "rwin", 0x5C },
 
             // 菜单键：唤起右键菜单的独立按键（与 alt 不是同一个键）
             { "menu", 0x5D }, { "apps", 0x5D }, { "contextmenu", 0x5D },
