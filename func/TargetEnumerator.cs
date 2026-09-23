@@ -22,7 +22,10 @@ namespace Pc_clicker.func
     {
         public TargetKind Kind { get; set; }
 
-        /// <summary>窗口标题；屏幕项为 “屏幕x”</summary>
+        /// <summary>
+        /// 脚本首行使用的目标名称：窗口项为进程文件名（如 notepad.exe），屏幕项为 “屏幕x”。
+        /// 进程文件名不会像窗口标题那样频繁变化，因此用它做校验依据。
+        /// </summary>
         public string Title { get; set; }
 
         /// <summary>窗口句柄；屏幕项为 IntPtr.Zero</summary>
@@ -36,6 +39,9 @@ namespace Pc_clicker.func
 
         /// <summary>下拉框中显示的文字</summary>
         public string Display { get; set; }
+
+        /// <summary>下拉框提示文字（窗口标题或显示器信息）</summary>
+        public string Detail { get; set; }
 
         public override string ToString()
         {
@@ -99,7 +105,9 @@ namespace Pc_clicker.func
                     ScreenTop = m.rcMonitor.Top,
                     ScreenWidth = width,
                     ScreenHeight = height,
-                    Display = string.Format("屏幕{0} ({1}×{2})", index, width, height)
+                    Display = string.Format("屏幕{0} ({1}×{2})", index, width, height),
+                    Detail = string.Format("显示器{0}：左上角({1},{2})，分辨率{3}×{4}",
+                        index, m.rcMonitor.Left, m.rcMonitor.Top, width, height)
                 });
             }
 
@@ -110,7 +118,8 @@ namespace Pc_clicker.func
                 {
                     Kind = TargetKind.Screen,
                     Title = "屏幕1",
-                    Display = "屏幕1"
+                    Display = "屏幕1",
+                    Detail = "显示器1"
                 });
             }
 
@@ -143,12 +152,16 @@ namespace Pc_clicker.func
                 NativeMethods.GetWindowThreadProcessId(hWnd, out pid);
                 if (pid == 0 || pid == selfPid) return true; // 排除自身窗口（主窗口、浮窗）
 
+                string processName = GetProcessFileName(pid);
+                if (string.IsNullOrEmpty(processName)) processName = "未知进程";
+
                 windows.Add(new TargetItem
                 {
                     Kind = TargetKind.Window,
-                    Title = title,
+                    Title = processName,
                     Handle = hWnd,
-                    Display = string.Format("{0}  [0x{1:X}]", title, hWnd.ToInt64())
+                    Display = string.Format("{0}  [0x{1:X}]", processName, hWnd.ToInt64()),
+                    Detail = "窗口标题：" + title
                 });
 
                 return true;
@@ -156,12 +169,45 @@ namespace Pc_clicker.func
 
             NativeMethods.EnumWindows(callback, IntPtr.Zero);
 
+            // 按进程名排序，同一进程的多个窗口按窗口标题排
             windows.Sort(delegate(TargetItem a, TargetItem b)
             {
-                return string.Compare(a.Title, b.Title, StringComparison.OrdinalIgnoreCase);
+                int byName = string.Compare(a.Title, b.Title, StringComparison.OrdinalIgnoreCase);
+                if (byName != 0) return byName;
+                return string.Compare(a.Detail, b.Detail, StringComparison.OrdinalIgnoreCase);
             });
 
             return windows;
+        }
+
+        /// <summary>
+        /// 取进程文件名（如 notepad.exe）。64 位系统上读取其它进程的主模块可能失败，
+        /// 此时退回进程名并补上 .exe。
+        /// </summary>
+        private static string GetProcessFileName(uint pid)
+        {
+            try
+            {
+                using (Process process = Process.GetProcessById((int)pid))
+                {
+                    try
+                    {
+                        string path = process.MainModule == null ? null : process.MainModule.FileName;
+                        if (!string.IsNullOrEmpty(path))
+                            return System.IO.Path.GetFileName(path);
+                    }
+                    catch
+                    {
+                        // 跨位数或权限不足时读取主模块会失败
+                    }
+
+                    return process.ProcessName + ".exe";
+                }
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

@@ -7,7 +7,7 @@
              d:DesignHeight="300" d:DesignWidth="316">
     <StackPanel Orientation="Vertical" Margin="4" HorizontalAlignment="Center">
         <TextBlock x:Name="intro"
-                   Text="在鼠标位置持续点击左/右键"
+                   Text="在鼠标位置持续点击所选按键（F8 开始/停止）"
                    TextWrapping="Wrap"
                    TextAlignment="Center"
                    HorizontalAlignment="Center"
@@ -69,5 +69,20 @@
                              Margin="4,142,0,0"/>
             </Grid>
         </GroupBox>
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="0,8,0,0">
+            <TextBlock Text="点击间隔(毫秒):"
+                       VerticalAlignment="Center"
+                       Margin="0,0,6,0"/>
+            <TextBox x:Name="clickInterval"
+                     Text="50"
+                     Width="72"
+                     HorizontalContentAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     ToolTip="每次点击之间等待的毫秒数"
+                     PreviewTextInput="ClickInterval_PreviewTextInput"/>
+        </StackPanel>
     </StackPanel>
 </UserControl>

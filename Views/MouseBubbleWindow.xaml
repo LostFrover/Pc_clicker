@@ -7,40 +7,32 @@
         Background="Transparent"
         Topmost="True"
         ShowInTaskbar="False"
+        ShowActivated="False"
+        Focusable="False"
         ResizeMode="NoResize"
-        SizeToContent="WidthAndHeight"
+        Width="126"
+        Height="34"
         WindowStartupLocation="Manual"
         UseLayoutRounding="True"
         SnapsToDevicePixels="True">
     <Border Background="#E6212226"
             BorderBrush="#80FFFFFF"
             BorderThickness="1"
-            CornerRadius="6"
-            Padding="10,7">
-        <StackPanel>
+            CornerRadius="5"
+            Padding="6,2">
+        <StackPanel Orientation="Vertical">
             <TextBlock x:Name="txtPos"
-                       Text="鼠标位置坐标:0,0"
+                       Text="0.000,0.000"
                        Foreground="White"
-                       FontSize="14"
-                       FontWeight="SemiBold"/>
-            <TextBlock x:Name="txtScreenPos"
-                       Text="屏幕坐标:0,0"
-                       Foreground="#FF9AA0A6"
-                       FontSize="10"
-                       Margin="0,2,0,0"/>
-            <TextBlock x:Name="txtTip"
+                       FontFamily="Consolas"
+                       FontSize="11"
+                       TextTrimming="CharacterEllipsis"/>
+            <TextBlock x:Name="txtTarget"
                        Text=""
-                       Foreground="#FF6E747C"
+                       Foreground="#FF9AA0A6"
                        FontSize="9"
-                       Margin="0,2,0,0"
-                       TextWrapping="Wrap"/>
-            <Button x:Name="btnClose"
-                    Content="关闭"
-                    HorizontalAlignment="Right"
-                    Padding="10,1"
-                    FontSize="11"
-                    Margin="0,5,0,0"
-                    Click="btnClose_Click"/>
+                       Margin="0,1,0,0"
+                       TextTrimming="CharacterEllipsis"/>
         </StackPanel>
     </Border>
 </Window>

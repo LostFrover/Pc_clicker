@@ -99,10 +99,16 @@ namespace Pc_clicker.func
         // 按键名称 -> Virtual-Key Code
         private static readonly Dictionary<string, ushort> KeyMap = new Dictionary<string, ushort>(StringComparer.OrdinalIgnoreCase)
         {
-            { "ctrl", 0x11 }, { "control", 0x11 },
-            { "alt", 0x12 }, { "menu", 0x12 },
-            { "shift", 0x10 },
+            // 修饰键（不区分左右，默认使用左侧按键）
+            { "ctrl", 0xA2 }, { "control", 0xA2 },
+            { "alt", 0xA4 },
+            { "shift", 0xA0 },
             { "win", 0x5B }, { "lwin", 0x5B },
+
+            // 菜单键：唤起右键菜单的独立按键（与 alt 不是同一个键）
+            { "menu", 0x5D }, { "apps", 0x5D }, { "contextmenu", 0x5D },
+
+            // 编辑/浏览键
             { "tab", 0x09 }, { "enter", 0x0D }, { "return", 0x0D },
             { "esc", 0x1B }, { "escape", 0x1B },
             { "space", 0x20 },
@@ -113,13 +119,46 @@ namespace Pc_clicker.func
             { "pageup", 0x21 }, { "pagedown", 0x22 },
             { "up", 0x26 }, { "down", 0x28 }, { "left", 0x25 }, { "right", 0x27 },
             { "capslock", 0x14 }, { "numlock", 0x90 }, { "scrolllock", 0x91 },
-            { "printscreen", 0x2C },
+            { "printscreen", 0x2C }, { "pause", 0x13 }, { "break", 0x13 },
+
+            // 功能键
             { "f1", 0x70 }, { "f2", 0x71 }, { "f3", 0x72 }, { "f4", 0x73 },
             { "f5", 0x74 }, { "f6", 0x75 }, { "f7", 0x76 }, { "f8", 0x77 },
             { "f9", 0x78 }, { "f10", 0x79 }, { "f11", 0x7A }, { "f12", 0x7B },
+
+            // 小键盘数字与符号
             { "num0", 0x60 }, { "num1", 0x61 }, { "num2", 0x62 }, { "num3", 0x63 },
             { "num4", 0x64 }, { "num5", 0x65 }, { "num6", 0x66 }, { "num7", 0x67 },
             { "num8", 0x68 }, { "num9", 0x69 },
+            { "numadd", 0x6B }, { "numplus", 0x6B },
+            { "numsubtract", 0x6D }, { "numminus", 0x6D },
+            { "nummultiply", 0x6A }, { "numstar", 0x6A },
+            { "numdivide", 0x6F }, { "numslash", 0x6F },
+            { "numdecimal", 0x6E }, { "numdot", 0x6E }, { "numperiod", 0x6E },
+            { "numenter", 0x0D },
+            { "numseparator", 0x6C }, { "numclear", 0x0C },
+
+            // 音量
+            { "volumeup", 0xAF }, { "volup", 0xAF },
+            { "volumedown", 0xAE }, { "voldown", 0xAE },
+            { "volumemute", 0xAD }, { "volmute", 0xAD }, { "mute", 0xAD },
+
+            // 媒体控制（快进/快退即下一曲/上一曲）
+            { "medianext", 0xB0 }, { "nexttrack", 0xB0 }, { "next", 0xB0 },
+            { "mediaprev", 0xB1 }, { "prevtrack", 0xB1 }, { "prev", 0xB1 },
+            { "mediastop", 0xB2 },
+            { "mediaplaypause", 0xB3 }, { "playpause", 0xB3 }, { "play", 0xB3 },
+            { "launchmedia", 0xB5 }, { "mediaselect", 0xB5 },
+
+            // 浏览器
+            { "browserback", 0xA6 }, { "browserforward", 0xA7 },
+            { "browserrefresh", 0xA8 }, { "browserstop", 0xA9 },
+            { "browsersearch", 0xAA }, { "browserfavorites", 0xAB },
+            { "browserhome", 0xAC },
+
+            // 其它
+            { "launchmail", 0xB4 }, { "launchapp1", 0xB6 }, { "launchapp2", 0xB7 },
+            { "sleep", 0x5F },
         };
 
         /// <summary>

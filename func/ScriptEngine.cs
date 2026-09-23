@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -12,8 +13,8 @@ namespace Pc_clicker.func
     {
         public string Type;            // mouse / key / wait
         public MouseButtonType Button; // mouse 有效
-        public int X;                  // mouse 有效，相对坐标
-        public int Y;
+        public double X;               // mouse 有效，0-1 相对比例；-1 表示鼠标当前位置
+        public double Y;
         public List<ushort> Keys;      // key 有效
         public int DelayMs;            // wait 有效
     }
@@ -162,7 +163,7 @@ namespace Pc_clicker.func
         private ScriptAction ParseMouse(string arg, int lineNo, out string error)
         {
             error = null;
-            // 参数: 按键类型 x y
+            // 参数: 按键类型 x y（x/y 为 0-1 的相对比例，-1 -1 表示鼠标当前位置）
             var parts = arg.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 3)
             {
@@ -170,15 +171,23 @@ namespace Pc_clicker.func
                 return null;
             }
 
-            int btn, x, y;
+            int btn;
+            double x, y;
             if (!int.TryParse(parts[0], out btn) || btn < 0 || btn > 4)
             {
                 error = string.Format("第 {0} 行：mouse 按键类型应为 0-4（左0 右1 中2 侧键3/4）", lineNo);
                 return null;
             }
-            if (!int.TryParse(parts[1], out x) || !int.TryParse(parts[2], out y))
+            if (!TryParseRatio(parts[1], out x) || !TryParseRatio(parts[2], out y))
             {
-                error = string.Format("第 {0} 行：mouse 坐标应为整数（-1 -1 表示当前位置）", lineNo);
+                error = string.Format("第 {0} 行：mouse 坐标应为数字", lineNo);
+                return null;
+            }
+
+            bool currentPosition = x == -1 && y == -1;
+            if (!currentPosition && (x < 0 || x > 1 || y < 0 || y > 1))
+            {
+                error = string.Format("第 {0} 行：mouse 坐标应为 0-1 的相对比例（-1 -1 表示鼠标当前位置）", lineNo);
                 return null;
             }
 
@@ -189,6 +198,14 @@ namespace Pc_clicker.func
                 X = x,
                 Y = y
             };
+        }
+
+        /// <summary>
+        /// 解析相对坐标比例（如 0.5），统一使用小数点，避免受系统区域设置影响。
+        /// </summary>
+        private static bool TryParseRatio(string text, out double value)
+        {
+            return double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
         }
 
         private ScriptAction ParseKey(string arg, int lineNo, out string error)

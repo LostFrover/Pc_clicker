@@ -41,8 +41,9 @@ namespace Pc_clicker.func
         /// <param name="script">已解析好的脚本</param>
         /// <param name="target">目标（窗口或屏幕）；单点循环传 null，表示在当前鼠标位置点击</param>
         /// <param name="mode">循环模式</param>
-        /// <param name="value">次数循环为次数，定时循环为间隔分钟数</param>
-        public void Start(ScriptEngine script, TargetItem target, LoopMode mode, int value)
+        /// <param name="value">次数循环为次数，时间循环为总循环时长（分钟）</param>
+        /// <param name="startDelayMs">开始前的等待毫秒数（便于用户把鼠标移到目标位置）</param>
+        public void Start(ScriptEngine script, TargetItem target, LoopMode mode, int value, int startDelayMs = 0)
         {
             if (script == null) throw new ArgumentNullException("script");
             if (_running) return;
@@ -51,7 +52,7 @@ namespace Pc_clicker.func
             _running = true;
 
             CancellationToken token = _cts.Token;
-            _worker = new Thread(delegate() { RunLoop(script, target, mode, value, token); });
+            _worker = new Thread(delegate() { RunLoop(script, target, mode, value, startDelayMs, token); });
             _worker.IsBackground = true;
             _worker.Name = "Pc_clicker.LoopRunner";
             _worker.Start();
@@ -71,25 +72,28 @@ namespace Pc_clicker.func
             }
         }
 
-        private void RunLoop(ScriptEngine script, TargetItem target, LoopMode mode, int value, CancellationToken token)
+        private void RunLoop(ScriptEngine script, TargetItem target, LoopMode mode, int value, int startDelayMs, CancellationToken token)
         {
             string error = null;
 
             try
             {
+                if (startDelayMs > 0)
+                    Sleep(TimeSpan.FromMilliseconds(startDelayMs), token);
+
                 if (target != null && target.Kind == TargetKind.Window)
                     ActivateTarget(target.Handle);
 
                 int total = mode == LoopMode.Count ? Math.Max(1, value) : int.MaxValue;
-                int intervalMinutes = Math.Max(1, value);
+                // 时间循环：记录的是总循环时长，在这个时间内不断重复执行脚本
+                DateTime deadline = DateTime.UtcNow.AddMinutes(Math.Max(1, value));
 
                 for (int i = 0; i < total; i++)
                 {
                     token.ThrowIfCancellationRequested();
 
-                    // 定时循环：每隔指定时间执行一次
-                    if (mode == LoopMode.Timed && i > 0)
-                        Sleep(TimeSpan.FromMinutes(intervalMinutes), token);
+                    if (mode == LoopMode.Timed && DateTime.UtcNow >= deadline)
+                        break;
 
                     ExecuteOnce(script, target, token);
                 }
@@ -148,35 +152,65 @@ namespace Pc_clicker.func
 
         private static void MouseClick(ScriptAction action, TargetItem target)
         {
-            int x = action.X;
-            int y = action.Y;
-
             // (-1 -1) 表示鼠标当前位置，不做坐标换算、不移动鼠标
-            if (x != -1 || y != -1)
+            if (action.X == -1 && action.Y == -1)
             {
-                if (target == null)
-                    throw new InvalidOperationException("未选择目标，无法使用相对坐标点击。");
-
-                if (target.Kind == TargetKind.Screen)
-                {
-                    x = target.ScreenLeft + action.X;
-                    y = target.ScreenTop + action.Y;
-                }
-                else
-                {
-                    if (!NativeMethods.IsWindow(target.Handle))
-                        throw new InvalidOperationException("目标窗口已关闭，已停止执行。");
-
-                    var origin = new NativeMethods.POINT { X = 0, Y = 0 };
-                    if (!NativeMethods.ClientToScreen(target.Handle, ref origin))
-                        throw new InvalidOperationException("无法获取目标窗口的位置，已停止执行。");
-
-                    x = origin.X + action.X;
-                    y = origin.Y + action.Y;
-                }
+                InputSimulator.MouseClick(action.Button, -1, -1);
+                return;
             }
 
-            InputSimulator.MouseClick(action.Button, x, y);
+            InputSimulator.MouseClick(action.Button,
+                ToScreenX(action, target),
+                ToScreenY(action, target));
+        }
+
+        /// <summary>
+        /// 把 0-1 的相对比例换算为屏幕坐标的横坐标。
+        /// </summary>
+        private static int ToScreenX(ScriptAction action, TargetItem target)
+        {
+            if (target.Kind == TargetKind.Screen)
+                return target.ScreenLeft + (int)Math.Round(action.X * target.ScreenWidth);
+
+            var box = GetClientBox(target);
+            return box.Left + (int)Math.Round(action.X * (box.Right - box.Left));
+        }
+
+        private static int ToScreenY(ScriptAction action, TargetItem target)
+        {
+            if (target.Kind == TargetKind.Screen)
+                return target.ScreenTop + (int)Math.Round(action.Y * target.ScreenHeight);
+
+            var box = GetClientBox(target);
+            return box.Top + (int)Math.Round(action.Y * (box.Bottom - box.Top));
+        }
+
+        /// <summary>
+        /// 目标窗口客户区在屏幕坐标系中的范围（左/上为屏幕坐标，右/下为 左+宽 / 上+高）。
+        /// </summary>
+        private static NativeMethods.RECT GetClientBox(TargetItem target)
+        {
+            if (target == null)
+                throw new InvalidOperationException("未选择目标，无法使用相对坐标点击。");
+
+            if (!NativeMethods.IsWindow(target.Handle))
+                throw new InvalidOperationException("目标窗口已关闭，已停止执行。");
+
+            var origin = new NativeMethods.POINT { X = 0, Y = 0 };
+            if (!NativeMethods.ClientToScreen(target.Handle, ref origin))
+                throw new InvalidOperationException("无法获取目标窗口的位置，已停止执行。");
+
+            NativeMethods.RECT client;
+            if (!NativeMethods.GetClientRect(target.Handle, out client))
+                throw new InvalidOperationException("无法获取目标窗口的大小，已停止执行。");
+
+            return new NativeMethods.RECT
+            {
+                Left = origin.X,
+                Top = origin.Y,
+                Right = origin.X + (client.Right - client.Left),
+                Bottom = origin.Y + (client.Bottom - client.Top)
+            };
         }
 
         /// <summary>

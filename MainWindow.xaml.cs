@@ -115,23 +115,10 @@ namespace Pc_clicker
 
         private void UpdateLoopInputUi()
         {
-            if (loop_num == null || loop_num_label == null) return;
+            if (loop_num == null) return;
 
-            if (loop_continue.IsChecked == true)
-            {
-                loop_num_label.Text = "循环次数/时间:";
-                loop_num.IsEnabled = false;
-            }
-            else if (loop_time.IsChecked == true)
-            {
-                loop_num_label.Text = "时间间隔(分钟):";
-                loop_num.IsEnabled = true;
-            }
-            else
-            {
-                loop_num_label.Text = "循环次数:";
-                loop_num.IsEnabled = true;
-            }
+            // 说明 label 文字固定不变（次数与时间共用一个输入框），只有无限循环时不需要填写
+            loop_num.IsEnabled = loop_continue.IsChecked != true;
 
             // 切换循环模式时把输入框重置为 1
             loop_num.Text = "1";
@@ -169,6 +156,7 @@ namespace Pc_clicker
         {
             ScriptEngine engine;
             TargetItem target = null;
+            int startDelayMs = 0;
 
             if (IsScriptPageActive)
             {
@@ -190,6 +178,16 @@ namespace Pc_clicker
                     X = -1,   // 当前位置
                     Y = -1
                 });
+
+                // 点击间隔：每点击一次后等待指定毫秒
+                engine.Actions.Add(new ScriptAction
+                {
+                    Type = "wait",
+                    DelayMs = singlePage.ClickIntervalMs
+                });
+
+                // 点击「执行」时鼠标就停在按钮上，延时一会儿让用户把鼠标移到目标位置
+                startDelayMs = 1000;
             }
 
             LoopMode mode;
@@ -219,7 +217,7 @@ namespace Pc_clicker
             }
 
             SetRunningState(true);
-            _runner.Start(engine, target, mode, value);
+            _runner.Start(engine, target, mode, value, startDelayMs);
         }
 
         /// <summary>
@@ -414,9 +412,9 @@ namespace Pc_clicker
 
         private const string FallbackGuide =
             "# Pc_clicker 指导文档\n\n" +
-            "脚本首行填写目标窗口标题或「屏幕x」，之后每行一条操作：\n\n" +
-            "- mouse 按键类型 x y    （按键类型 0左键/1右键/2中键/3前侧键/4后侧键；-1 -1 表示鼠标当前位置）\n" +
-            "- key 按键              （如 ctrl+alt+del、shift+a、win+r、menu）\n" +
+            "脚本首行填写目标进程文件名（如 notepad.exe）或「屏幕x」，之后每行一条操作：\n\n" +
+            "- mouse 按键类型 x y    （按键类型 0左键/1右键/2中键/3前侧键/4后侧键；x y 为 0-1 相对比例；-1 -1 表示鼠标当前位置）\n" +
+            "- key 按键              （如 ctrl+alt+del、shift+a、win+r、menu、volumeup、medianext）\n" +
             "- wait 毫秒             （如 wait 500）\n\n" +
             "快捷键：F8 开始/停止，F9 关闭鼠标坐标浮窗。\n";
     }

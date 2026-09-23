@@ -37,16 +37,19 @@
                                  Content="次数循环"
                                  IsChecked="True"
                                  GroupName="LoopMode"
+                                 ToolTip="执行指定次数后停止"
                                  Checked="LoopMode_Checked"
                                  Margin="6,2"/>
                     <RadioButton x:Name="loop_time"
                                  Content="时间循环(分钟)"
                                  GroupName="LoopMode"
+                                 ToolTip="在指定分钟数内不断重复执行脚本（记录总循环时长）"
                                  Checked="LoopMode_Checked"
                                  Margin="6,2"/>
                     <RadioButton x:Name="loop_continue"
                                  Content="无限循环"
                                  GroupName="LoopMode"
+                                 ToolTip="一直执行，直到点击停止或按 F8"
                                  Checked="LoopMode_Checked"
                                  Margin="6,2"/>
                 </StackPanel>

@@ -33,7 +33,14 @@
                        Margin="0,0,4,0"/>
             <ComboBox x:Name="comboTarget"
                       DropDownOpened="ComboTarget_DropDownOpened"
-                      SelectionChanged="ComboTarget_SelectionChanged"/>
+                      SelectionChanged="ComboTarget_SelectionChanged"
+                      ToolTip="目标名称使用进程文件名，窗口标题在悬停提示中显示">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Display}" ToolTip="{Binding Detail}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </DockPanel>
 
         <TextBlock Grid.Row="2"
