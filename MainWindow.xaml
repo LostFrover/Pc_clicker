@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Pc_clicker"
         xmlns:views="clr-namespace:Pc_clicker.Views"
         mc:Ignorable="d"
-        Title="Pc_clicker" Height="485" Width="403"
+        Title="Pc_clicker" Height="580" Width="403"
         Cursor="Hand">
     <Grid>
         <Grid.RowDefinitions>
@@ -25,7 +25,7 @@
         <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1" Margin="4">
             <ContentControl x:Name="pageHost"
                             HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center">
+                            VerticalContentAlignment="Top">
                 <views:SinglePointPage x:Name="singlePage"/>
             </ContentControl>
         </Border>
