@@ -73,7 +73,7 @@
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Center"
                     Margin="0,8,0,0">
-            <TextBlock Text="点击间隔(毫秒):"
+            <TextBlock Text="单次点击等待时间(毫秒)"
                        VerticalAlignment="Center"
                        Margin="0,0,6,0"/>
             <TextBox x:Name="clickInterval"

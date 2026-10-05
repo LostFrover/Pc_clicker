@@ -80,6 +80,13 @@ namespace Pc_clicker.Views
             }
         }
 
+        /// <summary>ListView 中的一行（用于把目标行加粗显示）</summary>
+        private class ScriptLineItem
+        {
+            public string Text { get; set; }
+            public bool IsTargetLine { get; set; }
+        }
+
         /// <summary>脚本文件所在文件夹是否存在，不存在则创建</summary>
         public static void EnsureScriptFolder()
         {
@@ -185,8 +192,91 @@ namespace Pc_clicker.Views
         private void ComboScript_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_reloading) return;
+
+            // 读取配置文件后，自动匹配运行中的目标程序
+            SelectTargetMatchingScript();
+
             ShowScriptContent();
             UpdateTargetHint();
+        }
+
+        /// <summary>
+        /// 根据当前脚本首行（目标名称）在正在运行的目标中查找匹配项并选中；
+        /// 若脚本首行是 screenX 或没有匹配到任何程序，则选中鼠标当前所在的屏幕。
+        /// </summary>
+        private void SelectTargetMatchingScript()
+        {
+            string header = ReadScriptHeader();
+
+            // 先枚举一次目标（屏幕在前，窗口在后）
+            comboTarget.Items.Clear();
+            foreach (TargetItem item in TargetEnumerator.Enumerate())
+                comboTarget.Items.Add(item);
+
+            TargetItem matched = null;
+
+            if (!string.IsNullOrEmpty(header))
+            {
+                // 屏幕目标（screenX）直接按名称匹配
+                foreach (TargetItem item in comboTarget.Items)
+                {
+                    if (item.Kind == TargetKind.Screen &&
+                        string.Equals(item.Title, header, StringComparison.OrdinalIgnoreCase))
+                    {
+                        matched = item;
+                        break;
+                    }
+                }
+
+                // 进程目标：按进程文件名匹配正在运行的窗口
+                if (matched == null)
+                {
+                    foreach (TargetItem item in comboTarget.Items)
+                    {
+                        if (item.Kind == TargetKind.Window &&
+                            string.Equals(item.Title, header, StringComparison.OrdinalIgnoreCase))
+                        {
+                            matched = item;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // 没有匹配到任何程序时，退回鼠标当前所在的屏幕
+            if (matched == null)
+                matched = FindScreenUnderMouse();
+
+            if (matched != null)
+                comboTarget.SelectedItem = matched;
+        }
+
+        /// <summary>找到鼠标当前所在的显示器项；找不到时退回第一块屏幕</summary>
+        private TargetItem FindScreenUnderMouse()
+        {
+            NativeMethods.POINT pt;
+            TargetItem firstScreen = null;
+
+            if (NativeMethods.GetCursorPos(out pt))
+            {
+                foreach (TargetItem item in comboTarget.Items)
+                {
+                    if (item.Kind != TargetKind.Screen) continue;
+                    if (firstScreen == null) firstScreen = item;
+
+                    if (pt.X >= item.ScreenLeft && pt.X < item.ScreenLeft + item.ScreenWidth &&
+                        pt.Y >= item.ScreenTop && pt.Y < item.ScreenTop + item.ScreenHeight)
+                        return item;
+                }
+            }
+
+            // 保底：返回第一块屏幕，没有屏幕则保持现状
+            if (firstScreen != null) return firstScreen;
+
+            foreach (TargetItem item in comboTarget.Items)
+                if (item.Kind == TargetKind.Screen) return item;
+
+            return null;
         }
 
         /// <summary>
@@ -250,14 +340,18 @@ namespace Pc_clicker.Views
                 string[] lines = ScriptEngine.ReadAllLines(path);
                 if (lines.Length == 0) return;
 
-                // 首行为目标行，其余行转换成人类可读的描述（空行不显示）
-                listScript.Items.Add(ScriptFormatter.FormatTargetLine((lines[0] ?? string.Empty).Trim()));
+                // 首行为目标行（加粗），其余行转换成人类可读的描述（空行不显示）
+                listScript.Items.Add(new ScriptLineItem
+                {
+                    Text = ScriptFormatter.FormatTargetLine((lines[0] ?? string.Empty).Trim()),
+                    IsTargetLine = true
+                });
 
                 for (int i = 1; i < lines.Length; i++)
                 {
                     string text = ScriptFormatter.FormatLine(lines[i]);
                     if (text != null)
-                        listScript.Items.Add(text);
+                        listScript.Items.Add(new ScriptLineItem { Text = text, IsTargetLine = false });
                 }
             }
             catch (Exception ex)
