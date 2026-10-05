@@ -132,7 +132,8 @@ namespace Pc_clicker.func
         public string ValidateTarget(string targetTitle)
         {
             if (string.IsNullOrEmpty(targetTitle)) return null; // 未选择目标时不校验
-            if (!string.Equals(TargetTitle, targetTitle, StringComparison.Ordinal))
+            // 进程文件名/屏幕名按不区分大小写比较（与界面里的自动匹配保持一致）
+            if (!string.Equals(TargetTitle, targetTitle, StringComparison.OrdinalIgnoreCase))
                 return string.Format("脚本首行 \"{0}\" 与当前选择的目标 \"{1}\" 不一致，\n请修改脚本首行后再执行。",
                     TargetTitle, targetTitle);
             return null;

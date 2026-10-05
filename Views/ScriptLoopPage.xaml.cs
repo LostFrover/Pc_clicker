@@ -85,6 +85,12 @@ namespace Pc_clicker.Views
         {
             public string Text { get; set; }
             public bool IsTargetLine { get; set; }
+
+            // 让列表项的自动化名称（读屏、UI 自动化）显示真正的文字
+            public override string ToString()
+            {
+                return Text;
+            }
         }
 
         /// <summary>脚本文件所在文件夹是否存在，不存在则创建</summary>
@@ -120,17 +126,17 @@ namespace Pc_clicker.Views
         /// <summary>重新枚举目标（屏幕 + 窗口），尽量保留原选择</summary>
         public void ReloadTargets()
         {
-            string previousKey = GetTargetKey(SelectedTarget);
+            string previousIdentity = GetTargetIdentity(SelectedTarget);
 
             comboTarget.Items.Clear();
             foreach (TargetItem item in TargetEnumerator.Enumerate())
                 comboTarget.Items.Add(item);
 
-            if (previousKey != null)
+            if (previousIdentity != null)
             {
                 foreach (TargetItem item in comboTarget.Items)
                 {
-                    if (GetTargetKey(item) == previousKey)
+                    if (GetTargetIdentity(item) == previousIdentity)
                     {
                         comboTarget.SelectedItem = item;
                         break;
@@ -141,9 +147,12 @@ namespace Pc_clicker.Views
             UpdateTargetHint();
         }
 
-        private static string GetTargetKey(TargetItem item)
+        /// <summary>
+        /// 目标的唯一标识：同一进程可能有多个窗口，必须带上窗口句柄才能区分。
+        /// </summary>
+        private static string GetTargetIdentity(TargetItem item)
         {
-            return item == null ? null : item.Kind + "|" + item.Title;
+            return item == null ? null : item.Kind + "|" + item.Title + "|" + item.Handle.ToInt64();
         }
 
         private void UpdateTargetHint()
@@ -165,7 +174,7 @@ namespace Pc_clicker.Views
                 return;
             }
 
-            if (string.Equals(header, target.Title, StringComparison.Ordinal))
+            if (string.Equals(header, target.Title, StringComparison.OrdinalIgnoreCase))
             {
                 targetHint.Foreground = Brushes.Green;
                 targetHint.Text = "脚本首行：" + header + "（与所选目标一致）";
@@ -194,19 +203,27 @@ namespace Pc_clicker.Views
             if (_reloading) return;
 
             // 读取配置文件后，自动匹配运行中的目标程序
-            SelectTargetMatchingScript();
+            AutoSelectTargetForScript();
 
             ShowScriptContent();
             UpdateTargetHint();
         }
 
         /// <summary>
-        /// 根据当前脚本首行（目标名称）在正在运行的目标中查找匹配项并选中；
-        /// 若脚本首行是 screenX 或没有匹配到任何程序，则选中鼠标当前所在的屏幕。
+        /// 读取脚本首行的目标名称，在正在运行的目标中匹配并选中；
+        /// 匹配不到（程序没在运行、名称写错等）则选中鼠标当前所在的屏幕。
+        /// 未选择脚本文件时不改变当前选择。
         /// </summary>
-        private void SelectTargetMatchingScript()
+        public void AutoSelectTargetForScript()
         {
             string header = ReadScriptHeader();
+
+            // 没有读取到脚本（没选文件）时保持现状
+            if (string.IsNullOrEmpty(SelectedScriptPath)) return;
+
+            // 记录当前选择，若它本来就和脚本首行同名则继续沿用（同一进程多个窗口时保留用户的选择）
+            TargetItem previous = SelectedTarget;
+            string previousIdentity = GetTargetIdentity(previous);
 
             // 先枚举一次目标（屏幕在前，窗口在后）
             comboTarget.Items.Clear();
@@ -216,39 +233,36 @@ namespace Pc_clicker.Views
             TargetItem matched = null;
 
             if (!string.IsNullOrEmpty(header))
-            {
-                // 屏幕目标（screenX）直接按名称匹配
-                foreach (TargetItem item in comboTarget.Items)
-                {
-                    if (item.Kind == TargetKind.Screen &&
-                        string.Equals(item.Title, header, StringComparison.OrdinalIgnoreCase))
-                    {
-                        matched = item;
-                        break;
-                    }
-                }
+                matched = FindTargetByTitle(header, previousIdentity);
 
-                // 进程目标：按进程文件名匹配正在运行的窗口
-                if (matched == null)
-                {
-                    foreach (TargetItem item in comboTarget.Items)
-                    {
-                        if (item.Kind == TargetKind.Window &&
-                            string.Equals(item.Title, header, StringComparison.OrdinalIgnoreCase))
-                        {
-                            matched = item;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // 没有匹配到任何程序时，退回鼠标当前所在的屏幕
+            // 没有匹配到任何目标时，退回鼠标当前所在的屏幕
             if (matched == null)
                 matched = FindScreenUnderMouse();
 
-            if (matched != null)
+            if (matched != null && !ReferenceEquals(comboTarget.SelectedItem, matched))
                 comboTarget.SelectedItem = matched;
+        }
+
+        /// <summary>
+        /// 按名称（进程文件名或 screenX）查找目标；同名项中优先返回原来选中的那一个。
+        /// </summary>
+        private TargetItem FindTargetByTitle(string title, string previousIdentity)
+        {
+            TargetItem fallback = null;
+
+            foreach (TargetItem item in comboTarget.Items)
+            {
+                if (string.IsNullOrEmpty(item.Title)) continue;
+                if (!string.Equals(item.Title, title, StringComparison.OrdinalIgnoreCase)) continue;
+
+                if (!string.IsNullOrEmpty(previousIdentity) &&
+                    GetTargetIdentity(item) == previousIdentity)
+                    return item;
+
+                if (fallback == null) fallback = item;
+            }
+
+            return fallback;
         }
 
         /// <summary>找到鼠标当前所在的显示器项；找不到时退回第一块屏幕</summary>
@@ -305,6 +319,9 @@ namespace Pc_clicker.Views
             {
                 _reloading = false;
             }
+
+            // 脚本（重新）选定后，按脚本首行自动匹配目标
+            AutoSelectTargetForScript();
 
             ShowScriptContent();
             UpdateTargetHint();
@@ -486,6 +503,8 @@ namespace Pc_clicker.Views
             MessageBox.Show("已在记事本中打开脚本。\n\n请编辑并保存脚本，然后关闭本提示窗口。",
                 "编辑脚本", MessageBoxButton.OK, MessageBoxImage.Information);
 
+            // 编辑后首行可能已改，重新匹配目标
+            AutoSelectTargetForScript();
             ShowScriptContent();
             UpdateTargetHint();
         }
